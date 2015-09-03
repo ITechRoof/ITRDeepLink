@@ -53,9 +53,12 @@
     
     if([[url host] isEqualToString:@"link"]){
         if([[url path] isEqualToString:@"/main"]){
+            [_contentViewController setViewControllers:@[[ViewController controller]] animated:YES];
         }else if([[url path] isEqualToString:@"/page1"]){
+            [_contentViewController setViewControllers:@[[ViewController controller]] animated:NO];
             [_contentViewController pushViewController:[Page1ViewController controller] animated:YES];
         }else if([[url path] isEqualToString:@"/page2"]){
+            [_contentViewController setViewControllers:@[[ViewController controller]] animated:NO];
             [_contentViewController pushViewController:[Page2ViewController controller] animated:YES];
         }
     }
