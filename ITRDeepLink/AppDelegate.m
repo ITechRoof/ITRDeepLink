@@ -10,6 +10,7 @@
 #import "ViewController.h"
 #import "Page1ViewController.h"
 #import "Page2ViewController.h"
+#import "AppboyKit.h"
 
 @interface AppDelegate ()
 
@@ -24,6 +25,15 @@
     // Override point for customization after application launch.
     _contentViewController = [[UINavigationController alloc] initWithRootViewController:[ViewController controller]];
     self.window.rootViewController = _contentViewController;
+    
+    [Appboy startWithApiKey:@"4e8d2f42-096c-4fb6-bcc0-b1411cad1007"
+              inApplication:application
+          withLaunchOptions:launchOptions];
+    
+    [AppDelegate registerForNotification:[UIApplication sharedApplication]];
+    
+    NSDictionary *pushDictionary = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    
     return YES;
 }
 
@@ -48,6 +58,32 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
++ (void)registerForNotification:(UIApplication *)application
+{
+    
+    // Register for Push Notitications, if running iOS 8
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+        [application registerForRemoteNotifications];
+    } else {
+        // Register for Push Notifications before iOS 8
+        [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert |UIRemoteNotificationTypeSound)];
+    }
+    
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)newDeviceToken {
+    [[Appboy sharedInstance] registerPushToken:
+     [NSString stringWithFormat:@"%@", newDeviceToken]];
+}
+
+- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+    [[Appboy sharedInstance] registerApplication:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+
 
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
     
