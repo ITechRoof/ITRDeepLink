@@ -32,8 +32,6 @@
     
     [AppDelegate registerForNotification:[UIApplication sharedApplication]];
     
-    NSDictionary *pushDictionary = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    
     return YES;
 }
 
